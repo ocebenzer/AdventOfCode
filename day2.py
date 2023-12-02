@@ -1,9 +1,9 @@
 sum_ids = 0
 
-num_cubes = {
-    "red": 12,
-    "green": 13,
-    "blue": 14
+min_cubes = {
+    "red": 0,
+    "green": 0,
+    "blue": 0
 }
 
 for line in open("day2.txt").readlines():
@@ -14,8 +14,12 @@ for line in open("day2.txt").readlines():
     for i in range(num_words):
         number = int(tokens[2 + 2*i])
         color = tokens[2 + 2*i + 1][:-1] if i < num_words-1 else tokens[2 + 2*i + 1]
-        if num_cubes[color] < number:
-            line_id = 0 # inefficient but works
-    sum_ids += line_id
+        min_cubes[color] = max(min_cubes[color], number)
+    sum_ids += min_cubes["red"] * min_cubes["green"] * min_cubes["blue"]
+    min_cubes = {
+        "red": 0,
+        "green": 0,
+        "blue": 0
+    }
 
 print(sum_ids)
