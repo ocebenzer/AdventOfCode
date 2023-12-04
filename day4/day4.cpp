@@ -1,8 +1,11 @@
 #include <algorithm>
 #include <fstream>
 #include <iostream>
+#include <stdexcept>
 #include <string>
 #include <array>
+#include <vector>
+#include <numeric>
 
 
 int main() {
@@ -12,9 +15,17 @@ int main() {
         exit(1);
     }
 
-    int points{0};
+    // Card numbers start from 1
+    std::vector<int> n_card_copies;
 
-    while(!file.eof()) {
+    int current_card{0};
+    while(!file.eof()) { // careful, no extra line should be in input
+        current_card++;
+
+        if (n_card_copies.size() < current_card) {
+            n_card_copies.push_back(0);
+        }
+
         std::array<int, 10> win_numbers;
 
         std::string tmp;
@@ -29,18 +40,30 @@ int main() {
         // |
         file >> tmp;
 
-        int line_point{1};
+        int matches{0};
 
         int number{0};
         for (int i{0}; i < 25; i++) {
             file >> number;
             if (std::find(win_numbers.begin(), win_numbers.end(), number) != win_numbers.end()) {
-                line_point *= 2;
+                matches++;
             }
         }
+        const int n_current_cards{n_card_copies[current_card-1] + 1};
 
-        points += line_point / 2;
+        // std::cout << "Card " << current_card << ": " << matches << " matches. (x" << n_current_cards << ")\n";
+
+        for (int i{current_card-1 + 1}; i <= current_card-1 + matches; i++) {
+            try {
+                n_card_copies.at(i) += n_current_cards;
+            }
+            catch (std::out_of_range e) {
+                n_card_copies.push_back(n_current_cards);
+            }
+        }
     }
 
-    std::cout << points << std::endl;
+    const int total_copies{std::reduce(n_card_copies.begin(), n_card_copies.end(), 0, [] (int a, int b) { return a + b; })};
+
+    std::cout << n_card_copies.size() + total_copies << std::endl;
 }
