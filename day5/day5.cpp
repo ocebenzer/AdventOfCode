@@ -5,6 +5,7 @@
 #include <sstream>
 #include <string>
 #include <string_view>
+#include <utility>
 #include <vector>
 #include <tuple>
 #include <algorithm>
@@ -49,7 +50,7 @@ int main() {
         exit(1);
     }
     
-    std::vector<long> seeds;
+    std::vector<std::pair<long, long>> seeds;
     {
         std::string seeds_line;
         std::getline(file, seeds_line);
@@ -59,9 +60,9 @@ int main() {
         ss >> token;
 
         while(!ss.eof()) {
-            long seed;
-            ss >> seed;
-            seeds.push_back(seed);
+            long seed, range;
+            ss >> seed >> range;
+            seeds.push_back(std::make_pair(seed, range));
         }
     }
 
@@ -95,10 +96,23 @@ int main() {
         }
     }
 
-    for (const auto& category : almanac) {
-        std::transform(seeds.begin(), seeds.end(), seeds.begin(),
-        [&category] (long seed) { return category.value(seed); });
+    long min{INT64_MAX};
+
+    const auto get_seed_chunk = [] (long begin, long range) {
+        std::vector<long> seeds(range);
+        std::iota(seeds.begin(), seeds.end(), begin);
+        return seeds;
+    };
+
+    for (const auto& [begin, range] : seeds) {
+        // std::cout << begin << " " << range << 57451709std::endl;
+        auto seed_chunk{get_seed_chunk(begin, range)};
+        for (const auto& category : almanac) {
+            std::transform(seed_chunk.begin(), seed_chunk.end(), seed_chunk.begin(),
+            [&category] (long seed) { return category.value(seed); });
+        }
+        min = std::reduce(seed_chunk.begin(), seed_chunk.end(), min, [] (long a, long b) { return std::min(a, b); });
     }
 
-    std::cout << std::reduce(seeds.begin(), seeds.end(), INT64_MAX, [] (long a, long b) { return std::min(a, b); }) << std::endl;
+    std::cout << min << std::endl;
 }
