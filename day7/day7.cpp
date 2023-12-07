@@ -8,6 +8,7 @@
 #include <algorithm>
 
 enum class card : uint8_t {
+    J,
     _2,
     _3,
     _4,
@@ -17,16 +18,9 @@ enum class card : uint8_t {
     _8,
     _9,
     T,
-    J,
     Q,
     K,
     A,
-};
-
-const auto compare = [] (card c1, card c2) {
-    if (c1 > c2) return 1;
-    else if (c1 == c2) return 0;
-    else return -1;
 };
 
 enum strength : uint8_t {
@@ -69,29 +63,36 @@ struct hand {
             }
         });
 
-        auto sorted_cards = cards;
-        std::sort(sorted_cards.begin(), sorted_cards.end());
-
+        long n_joker;
         std::array<int, 2> pairs{0};
-        int pairs_index{0};
 
-        auto& prev_card{sorted_cards[0]};
-        for (auto i{1}; i < sorted_cards.size(); i++) {
-            const auto& card{sorted_cards[i]};
-            auto& diff{pairs[pairs_index]};
+        {
+            auto sorted_cards = cards;
+            std::sort(sorted_cards.begin(), sorted_cards.end());
 
-            if (prev_card == card) {
-                diff++;
+            n_joker = std::count(sorted_cards.begin(), sorted_cards.end(), card::J);
+
+            int pairs_index{0};
+
+            auto& prev_card{sorted_cards[n_joker]};
+            for (auto i{n_joker+1}; i < sorted_cards.size(); i++) {
+                const auto& card{sorted_cards[i]};
+                auto& diff{pairs[pairs_index]};
+
+                if (prev_card == card) {
+                    diff++;
+                }
+                else if (diff != 0) {
+                    pairs_index++;
+                }
+                prev_card = card;
             }
-            else if (diff != 0) {
-                pairs_index++;
-            }
-            prev_card = card;
+
+            std::sort(pairs.begin(), pairs.end());
         }
 
-        std::sort(pairs.begin(), pairs.end());
-
-        switch (pairs[1]) {
+        switch (pairs[1] + n_joker) {
+            case 5:
             case 4:
                 hand_strength = five_of_a_kind;
                 break;
