@@ -1,8 +1,11 @@
+#include <algorithm>
 #include <fstream>
 #include <iostream>
 #include <stdexcept>
 #include <string>
 #include <unordered_map>
+#include <vector>
+#include <numeric>
 
 struct node {
     std::string id;
@@ -56,14 +59,29 @@ int main() {
         }
     }
 
-    int i{0};
-    std::string current{"AAA"};
-    while (current != "ZZZ") {
-        const char c{rule[i % rule.size()]};
-        const auto& node{nodes[current]};
-        current = node.get(c);
-        i++;
+    std::vector<std::pair<std::string, int>> current;
+    std::transform(nodes.begin(), nodes.end(), std::back_inserter(current), [] (const auto& n) {
+        const auto& [key, val]{n};
+        return std::make_pair(val.id, 0);
+    });
+    std::erase_if(current, [] (const auto& n) {
+        const auto& [id, i]{n};
+        return *id.rbegin() != 'A';
+    });
+
+    for (auto& [id, i] : current) {
+        while (*id.rbegin() != 'Z') {
+            const char c{rule[i % rule.size()]};
+            id = nodes[id].get(c);
+            i++;
+        }
     }
 
-    std::cout << i << std::endl;
+    unsigned long long result{1};
+    std::for_each(current.begin(), current.end(), [&result] (const auto& n) {
+        const auto& [id, i]{n};
+        result = std::lcm(result,i);
+    });
+
+    std::cout << result << std::endl;
 }
