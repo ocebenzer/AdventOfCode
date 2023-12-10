@@ -35,13 +35,13 @@ int main() {
         file.close();
     }
 
-    unsigned long long sum{0};
+    long long sum{0};
 
     for (const auto& history : histories) {
         std::vector<std::vector<int>> diffs;
 
         diffs.push_back(history);
-        sum += *history.rbegin();
+        std::reverse(diffs.rbegin()->begin(), diffs.rbegin()->end());
 
         const auto all_zero = [] (const std::vector<int>& list) {
             for (const auto& e : list) {
@@ -53,12 +53,22 @@ int main() {
         while (!all_zero(*diffs.rbegin())) {
             const auto& upper_level{*diffs.rbegin()};
             std::vector<int> level;
-            for (auto itr{upper_level.begin()+1}; itr < upper_level.end(); ++itr) {
+            for (auto itr{upper_level.rbegin()+1}; itr < upper_level.rend(); ++itr) {
                 level.push_back(*itr - *(itr-1));
             }
             diffs.push_back(level);
-            sum += *level.rbegin();
+            std::reverse(diffs.rbegin()->begin(), diffs.rbegin()->end());
         }
+
+        diffs.rbegin()->push_back(0);
+
+        for (auto itr{diffs.rbegin()+1}; itr < diffs.rend(); itr++) {
+            const auto upper_last{*(itr-1)->rbegin()};
+            const auto last{*itr->rbegin()};
+            itr->push_back(last - upper_last);
+        }
+
+        sum += *diffs.begin()->rbegin();
     }
 
     std::cout << sum << std::endl;
