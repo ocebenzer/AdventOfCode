@@ -10,6 +10,7 @@ using node = std::pair<char, int>;
 
 int main() {
     std::vector<std::vector<node>> map;
+    std::vector<std::vector<char>> spread_map;
     pos start{-1, -1};
 
     {
@@ -32,6 +33,7 @@ int main() {
                 }
             }
             map.push_back(row);
+            spread_map.push_back(std::vector<char>(line.size(), '.'));
         }
 
         file.close();
@@ -87,6 +89,12 @@ int main() {
                 break;
             case 'S':
                 neighbors = find_neighbors(i, j);
+                if (neighbors[0] == up && neighbors[1] == down) { c = '|'; };
+                if (neighbors[0] == left && neighbors[1] == right) { c = '-'; };
+                if (neighbors[0] == up && neighbors[1] == right) { c = 'L'; };
+                if (neighbors[0] == up && neighbors[1] == left) { c = 'J'; };
+                if (neighbors[0] == down && neighbors[1] == left) { c = '7'; };
+                if (neighbors[0] == down && neighbors[1] == right) { c = 'F'; };
                 break;
             case 'J':
                 neighbors = {up, left};
@@ -114,7 +122,34 @@ int main() {
 
         max++;
 
+        spread_map[curr.first][curr.second] = map[curr.first][curr.second].first;
     } while (curr != start);
 
-    std::cout << (max+1) / 2 << std::endl;
+    int ctr{0};
+
+    for (int i{0}; i < spread_map.size(); ++i) {
+        for (int j{0}; j < spread_map[0].size(); ++j) {
+            const char c{spread_map[i][j]};
+            if (c != '.') continue;
+
+            int wall_points{0};
+            for (int k{j}; k >=0; --k) {
+                const char c_left{spread_map[i][k]};
+                if (c_left == '|') {
+                    wall_points += 2;
+                }
+                if (std::string{"JF"}.find(c_left) != std::string::npos) {
+                    wall_points += 1;
+                }
+                if (std::string{"L7"}.find(c_left) != std::string::npos) {
+                    wall_points -= 1;
+                }
+            }
+            if (wall_points % 4 != 0) {
+                ++ctr;
+            }
+        }
+    }
+
+    std::cout << ctr << std::endl;
 }
