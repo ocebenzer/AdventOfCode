@@ -16,6 +16,23 @@ bool update_valid (std::unordered_map<int, std::vector<int>>& rules, const std::
     return true;
 }
 
+void validate_update (std::unordered_map<int, std::vector<int>>& rules, std::span<int> pages) {
+start:
+    for (auto page = pages.begin(); page < pages.end(); ++page) {
+        if (!rules.contains(*page)) continue;
+
+        for (const auto& rule : rules[*page]) {
+            auto target_page = std::ranges::find(pages, rule);
+            if (std::distance(page, target_page) < 0) {
+                const int target_value = *target_page;
+                *target_page = *page;
+                *page = target_value;
+                goto start; // heresy but works
+            };
+        }
+    }
+}
+
 int main() {
     const auto lines = ocb::read_lines("day5/input1.txt");
 
@@ -52,12 +69,22 @@ int main() {
         }
     }
 
-    int sum = 0;
+    std::vector<std::vector<int>> invalid_updates;
     for (const auto& pages : updates) {
-        if (update_valid(rules, std::span{pages.begin(), pages.end()})) {
-            sum += pages[pages.size() / 2 ];
+        if (!update_valid(rules, std::span{pages.begin(), pages.end()})) {
+            invalid_updates.push_back(pages);
         }
     }
+
+    for (auto& invalid_update : invalid_updates) {
+        validate_update(rules, invalid_update);
+    }
+
+    int sum = 0;
+    for (const auto& invalid_update : invalid_updates) {
+        sum += invalid_update[invalid_update.size() / 2];
+    }
+
 
     std::cout << sum << std::endl;
 }
