@@ -24,6 +24,18 @@ bool is_safe (std::span<const int> levels) {
     return true;
 }
 
+bool is_safe_with_one_tolerated(std::span<const int> levels) {
+    if (is_safe(std::span{levels.begin(), levels.end()})) return true;
+
+    for (int i=0; i < levels.size(); ++i) {
+        auto tolerated_levels = std::vector(levels.begin(), levels.end());
+        tolerated_levels.erase(tolerated_levels.begin() + i);
+        if (is_safe(tolerated_levels)) return true;
+    }
+
+    return false;
+}
+
 int main() {
     const auto lines = ocb::read_lines("day2/input1.txt");
 
@@ -39,7 +51,7 @@ int main() {
 
     int safe_counter = 0;
     for (const auto& levels : reports) {
-        if (is_safe(std::span{levels.begin(), levels.end()})) ++safe_counter;
+        if (is_safe_with_one_tolerated(std::span{levels.begin(), levels.end()})) ++safe_counter;
     }
 
     std::cout << safe_counter << std::endl;
