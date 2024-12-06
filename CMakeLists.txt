@@ -9,5 +9,5 @@ include_directories("../Utils/include")
 add_subdirectory("../BigInt" bigint)
 add_subdirectory("../Utils" utilities)
 
-add_subdirectory(2023)
+# add_subdirectory(2023)
 add_subdirectory(2024)
