@@ -1,8 +1,8 @@
+#include <algorithm>
 #include <numeric>
-
-#include "utils.h"
-#include <ranges>
 #include <unordered_map>
+
+#include "utils/utils.hpp"
 
 int main() {
     const auto lines = ocb::read_lines("day1/input1.txt");

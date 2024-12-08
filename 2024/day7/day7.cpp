@@ -1,9 +1,8 @@
 #include <deque>
 #include <numeric>
 #include <unordered_map>
-#include <unordered_set>
 
-#include "utils.h"
+#include "utils/utils.hpp"
 
 enum operation { add, mul, concat };
 

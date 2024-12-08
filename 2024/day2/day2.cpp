@@ -1,8 +1,6 @@
-#include <numeric>
-
-#include "utils.h"
 #include <ranges>
-#include <unordered_map>
+
+#include "utils/utils.hpp"
 
 bool is_safe (std::span<const int> levels) {
     bool is_ascending = true;

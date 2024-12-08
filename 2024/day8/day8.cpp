@@ -1,8 +1,7 @@
-#include <set>
 #include <unordered_map>
 #include <unordered_set>
 
-#include "utils.h"
+#include "utils/utils.hpp"
 
 int main() {
     const auto lines = ocb::read_lines("day8/input1.txt");

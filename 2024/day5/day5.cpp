@@ -1,7 +1,7 @@
 #include <unordered_map>
 #include <span>
 
-#include "utils.h"
+#include "utils/utils.hpp"
 
 bool update_valid (std::unordered_map<int, std::vector<int>>& rules, const std::span<const int> pages) {
     for (auto page = pages.begin(); page < pages.end(); ++page) {

@@ -1,6 +1,6 @@
 #include <regex>
 
-#include "utils.h"
+#include "utils/utils.hpp"
 
 int main() {
     const auto lines = ocb::read_lines("day4/input1.txt");

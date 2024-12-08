@@ -1,6 +1,6 @@
 #include <regex>
 
-#include "utils.h"
+#include "utils/utils.hpp"
 
 const std::regex mul_regex(R"(mul\(\d{1,3},\d{1,3}\)|do\(\)|don't\(\))");
 
