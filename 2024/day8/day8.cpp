@@ -1,5 +1,6 @@
 #include <unordered_map>
 #include <unordered_set>
+#include <algorithm>
 
 #include "utils/utils.hpp"
 
@@ -7,8 +8,8 @@ int main() {
     const auto lines = ocb::read_lines("day8/input1.txt");
 
     const auto in_grid = [&lines] (const auto node) {
-        return node.col >= 0 && node.col < lines.size() &&
-            node.row >= 0 && node.row < lines[0].size();
+        return node.row >= 0 && node.row < lines.size() &&
+            node.col >= 0 && node.col < lines[0].size();
     };
 
     std::unordered_map<char, std::vector<ocb::Position>> node_lists;
