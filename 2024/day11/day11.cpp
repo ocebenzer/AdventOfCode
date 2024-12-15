@@ -1,38 +1,47 @@
 #include <format>
 #include <sstream>
-#include <numeric>
+#include <map>
 
 #include "utils/utils.hpp"
+
+constexpr auto increment = [](auto &map, const auto &key, const ocb::BigInt &times = 1) {
+    if (map.contains(key)) map[key] += times;
+    else map[key] = times;
+};
 
 int main() {
     const auto lines = ocb::read_lines("day11/input1.txt");
 
-    std::vector<std::vector<uint64_t> > stones; {
-        std::vector<uint64_t> gen0;
+    std::vector<std::map<uint64_t, ocb::BigInt> > stones; {
+        std::map<uint64_t, ocb::BigInt> gen0;
         uint64_t stone;
         std::stringstream ss{lines[0]};
         while (ss >> stone) {
-            gen0.emplace_back(stone);
+            increment(gen0, stone);
         }
         stones.push_back(gen0);
     }
 
-    for (int i = 0; i < 25; ++i) {
-        std::vector<uint64_t> gen;
-        for (const auto &stone: stones.back()) {
+    for (int i = 0; i < 75; ++i) {
+        std::map<uint64_t, ocb::BigInt> gen;
+        for (const auto &[stone, times]: stones.back()) {
             if (stone == 0) {
-                gen.emplace_back(1);
-            } else if (const auto stone_str = std::to_string(stone);
-                stone_str.size() % 2 == 0) {
-                const auto half = stone_str.size() / 2;
-                gen.emplace_back(std::atoi(stone_str.substr(0, half).c_str()));
-                gen.emplace_back(std::atoi(stone_str.substr(half).c_str()));
+                increment(gen, 1, times);
+            } else if (std::to_string(stone).size() % 2 == 0) {
+                const auto half = std::to_string(stone).size() / 2;
+                increment(gen, std::stoull(std::to_string(stone).substr(0, half)), times);
+                increment(gen, std::stoull(std::to_string(stone).substr(half)), times);
             } else {
-                gen.emplace_back(stone * 2024);
+                increment(gen, stone * 2024, times);
             }
         }
         stones.push_back(gen);
+        std::cout << i << std::endl;
     }
 
-    std::cout << std::format("Result is: {}", stones.back().size()) << std::endl;
+    ocb::BigInt sum = 0;
+    for (const auto &[stone, times]: stones.back()) {
+        sum += times;
+    }
+    std::cout << std::format("Result is: {}", sum.get_value()) << std::endl;
 }
