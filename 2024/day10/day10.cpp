@@ -18,17 +18,14 @@ int main() {
         }
     }
 
-    std::map<ocb::Position, std::unordered_set<ocb::Position>> scores;
+    int sum = 0;
     while (!trailheads.empty()) {
         const auto [start, current] = trailheads.front();
         trailheads.pop_front();
 
         const auto& node_value = lines_at(current);
         if (node_value == '9') {
-            if (!scores.contains(start)) {
-                scores[start] = std::unordered_set<ocb::Position>{};
-            }
-            scores[start].insert(current);
+            ++sum;
             continue;
         }
 
@@ -59,10 +56,6 @@ int main() {
             }
         } catch (const std::out_of_range&) {};
     }
-
-    const auto sum = std::accumulate(scores.begin(), scores.end(), 0, [] (auto v1, const auto& v2) {
-        return v1 + v2.second.size();
-    });
 
     std::cout << std::format("Result is: {}", sum) << std::endl;
 }
