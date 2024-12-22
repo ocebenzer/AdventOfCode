@@ -3,11 +3,11 @@ project(AdventOfCode)
 
 set(CMAKE_CXX_STANDARD 23)
 
-include_directories("../BigInt/include")
-include_directories("../cpp-utils/include")
-
-add_subdirectory("../BigInt" bigint)
-add_subdirectory("../cpp-utils" utilities)
+foreach (library "BigInt" "cpp-utils" "MultiDimensional")
+    message("adding library ${library}")
+    include_directories("../${library}/include")
+    add_subdirectory("../${library}" ${library})
+endforeach ()
 
 # add_subdirectory(2023)
 add_subdirectory(2024)
